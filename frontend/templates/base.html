@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <title>E-commerce Header</title>
+</head>
+<body style="margin: 0; font-family: Arial, sans-serif;">
+    
+    <!-- Header -->
+    <header style="background-color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 15px 30px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto;">
+            
+            <!-- Logo -->
+            <div style="display: flex; align-items: center;">
+                <a href="/" style="text-decoration: none; color: #333; font-size: 24px; font-weight: bold;">
+                    ShopLogo
+                </a>
+            </div>
+            
+            <!-- Navigation -->
+            <nav style="display: flex; align-items: center; gap: 30px;">
+                
+                <a href="/" style="text-decoration: none; color: #333; font-size: 16px; transition: color 0.3s;">Home</a>
+                <a href="/about" style="text-decoration: none; color: #333; font-size: 16px; transition: color 0.3s;">About</a>
+                <a href="/categories" style="text-decoration: none; color: #333; font-size: 16px; transition: color 0.3s;">Categories</a>
+                
+                <!-- Sign In Button (shown when not logged in) -->
+                <a href="/signin" id="signInBtn" style="text-decoration: none; background-color: #007bff; color: white; padding: 8px 20px; border-radius: 5px; font-size: 16px; transition: background-color 0.3s;">Sign In</a>
+                
+                <!-- Profile Icon (shown when logged in) -->
+                <a href="/profile" id="profileIcon" style="display: none; text-decoration: none;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background-color: #007bff; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px;">
+                        U
+                    </div>
+                </a>
+            </nav>
+            
+        </div>
+    </header>
+
+    <script>
+        // Simulate login state (change this to true to see profile icon)
+        const isLoggedIn = false;
+        
+        const signInBtn = document.getElementById('signInBtn');
+        const profileIcon = document.getElementById('profileIcon');
+        
+        if (isLoggedIn) {
+            signInBtn.style.display = 'none';
+            profileIcon.style.display = 'block';
+        } else {
+            signInBtn.style.display = 'block';
+            profileIcon.style.display = 'none';
+        }
+    </script>
+
+</body>
+</html>
