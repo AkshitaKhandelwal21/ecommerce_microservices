@@ -1,9 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-from user_service.auth.managers import CustomUserManager
+from auths.managers import CustomUserManager
 
-
+ 
 # Create your models here.
 class Users(AbstractUser):
     RoleChoices = (
@@ -13,9 +13,10 @@ class Users(AbstractUser):
     )
 
     username = None
+    email = models.EmailField(unique=True)
     phone = models.CharField(max_length=15)
-    roles = models.JSONField(default=list)
-
+    roles = models.JSONField(choices=RoleChoices, default="customer")
+ 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
