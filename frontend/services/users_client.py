@@ -9,4 +9,8 @@ class UserService:
 
     @classmethod
     def register_user(cls, data):
-        return cls.client.post(f"{cls.AUTH_SERVICE_URL}/signup/", data)
+        return cls.client.post(f"{cls.AUTH_SERVICE_URL}/auth/signup/", data)
+    
+    @classmethod
+    def login_user(cls, data):
+        return cls.client.post(f"{cls.AUTH_SERVICE_URL}/auth/login/", data)

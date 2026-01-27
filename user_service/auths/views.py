@@ -17,14 +17,17 @@ class RegisterUserView(CreateAPIView):
 class LoginView(APIView):
 
     def post(self, request):
-        username = request.data.get('username')
+        username = request.data.get('email')
         password = request.data.get('password')
 
         user = authenticate(username=username, password=password)
         if user:
             token, created = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key})
+            return Response({'token': token.key, 'role': user.roles}, status=200)
         
-
+        return Response(
+            {'error': 'Invalid username or password'}, status=401
+        )
+    
 class LogoutView():
     pass
