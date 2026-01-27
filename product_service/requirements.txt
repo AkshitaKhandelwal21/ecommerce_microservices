@@ -3,3 +3,4 @@ requests
 sqlmodel
 django
 django-rest-framework
+pyyaml
