@@ -23,7 +23,6 @@ class SubCategory(models.Model):
         unique_together = ('name', 'category')
 
 class ProductModel(TimeStamps, models.Model):
-    id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=300)
     desc = models.TextField()
     price = models.FloatField()

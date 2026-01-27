@@ -8,7 +8,9 @@ class APIClient:
             self.base_headers["Authorization"] = f"Bearer {token}"
 
     def get(self, url, params=None):
-        return requests.get(url, headers=self.base_headers, params=params)
+        response = requests.get(url, headers=self.base_headers, params=params)
+        response.raise_for_status()
+        return response.json()
 
     def post(self, url, data=None):
         return requests.post(url, headers=self.base_headers, json=data)
