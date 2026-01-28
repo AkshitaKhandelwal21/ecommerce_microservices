@@ -5,6 +5,7 @@ from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.views import APIView
 from auths.models import Users
 from auths.serializers import UserSerializer
+from auths.middleware import UserService
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -42,3 +43,12 @@ class LoginView(APIView):
     
 class LogoutView():
     pass
+
+
+class RegisterAsSellerView(APIView):
+    def post(self, request, *args, **kwargs):
+        user_id = request.data.get("user_id")
+        if not user_id:
+            return
+        user = UserService.register_as_seller(user_id)
+        return Response({"roles": user.roles})

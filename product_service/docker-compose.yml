@@ -1,0 +1,9 @@
+
+services:
+  products:
+    build: .
+    container_name: product_service
+    ports:
+      - "9000:9000"
+    volumes:
+      - .:/app
