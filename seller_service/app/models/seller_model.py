@@ -12,6 +12,7 @@ class BusinessType(str, Enum):
 class Seller(SQLModel, table=True):
     
     id: int = Field(primary_key=True)
+    user_id: int = Field(unique=True, index=True, nullable=False)
     name: str = Field(max_length=200)
     email: str = Field(unique=True, nullable=False)
     phone: str = Field(unique=True)
