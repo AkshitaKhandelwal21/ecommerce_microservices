@@ -15,12 +15,17 @@ class Users(AbstractUser):
     username = None
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=15)
-    roles = models.JSONField(choices=RoleChoices, default="customer")
+    roles = models.JSONField(default=list)
  
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
+
+    def save(self, *args, **kwargs):
+        if not self.roles:
+            self.roles = ["customer"]
+        super().save(*args, **kwargs)
 
     def has_role(self, role):
         return role in self.roles

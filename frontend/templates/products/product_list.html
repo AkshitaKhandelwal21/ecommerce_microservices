@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - ShopHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa;">
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}" style="font-weight: bold; font-size: 1.5rem;">
+                <i class="fas fa-shopping-bag me-2"></i>ShopHub
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <form class="d-flex mx-auto" style="width: 50%;" method="GET">
+                    <input class="form-control me-2" type="search" name="search" placeholder="Search products..." value="{{ request.GET.search }}" style="border-radius: 25px; padding: 10px 20px;">
+                    <button class="btn btn-light" type="submit" style="border-radius: 25px; padding: 10px 25px; font-weight: 600;">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}"><i class="fas fa-home me-1"></i>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'home' %}"><i class="fas fa-box me-1"></i>Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-heart me-1"></i>Wishlist <span class="badge bg-danger">{{ wishlist_count|default:0 }}</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-shopping-cart me-1"></i>Cart <span class="badge bg-danger">{{ cart_count|default:0 }}</span></a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>{{ user.username|default:"Account" }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-shopping-bag me-2"></i>Orders</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="container mt-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" style="background-color: white; padding: 15px 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" style="color: #667eea; text-decoration: none;"><i class="fas fa-home me-1"></i>Home</a></li>
+                {% if category %}
+                <li class="breadcrumb-item"><a href="{% url 'products' %}" style="color: #667eea; text-decoration: none;">Products</a></li>
+                <li class="breadcrumb-item active">{{ category.name }}</li>
+                {% else %}
+                <li class="breadcrumb-item active">All Products</li>
+                {% endif %}
+            </ol>
+        </nav>
+    </div>
+
+    <div class="container my-4">
+        <div class="row">   
+            <!-- Sidebar Filters -->
+            <div class="col-lg-3 col-md-4 mb-4">
+                <div class="card" style="border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 20px;">
+                    <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px 15px 0 0; padding: 1.2rem;">
+                        <h5 style="margin: 0; font-weight: 700;"><i class="fas fa-filter me-2"></i>Filters</h5>
+                    </div>
+                    <div class="card-body" style="padding: 1.5rem;">
+                        <form method="GET" id="filterForm">
+                            <!-- Preserve search query if exists -->
+                            {% if request.GET.search %}
+                            <input type="hidden" name="search" value="{{ request.GET.search }}">
+                            {% endif %}
+                            
+                            <!-- Categories Filter -->
+                            <div class="mb-4">
+                                <h6 style="font-weight: 700; color: #333; margin-bottom: 1rem; border-bottom: 2px solid #667eea; padding-bottom: 8px;">
+                                    <i class="fas fa-th-large me-2"></i>Categories
+                                </h6>
+                                {% for cat in categories %}
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="category" value="{{ cat.id }}" id="cat{{ cat.id }}" 
+                                    <label class="form-check-label" for="cat{{ cat.id }}" style="color: #555; cursor: pointer;">
+                                        {{ cat.name }} <span style="color: #999; font-size: 0.85rem;">({{ cat.product_count }})</span>
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Price Range Filter -->
+                            <div class="mb-4">
+                                <h6 style="font-weight: 700; color: #333; margin-bottom: 1rem; border-bottom: 2px solid #667eea; padding-bottom: 8px;">
+                                    <i class="fas fa-dollar-sign me-2"></i>Price Range
+                                </h6>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <label style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Min Price</label>
+                                        <input type="number" class="form-control" name="min_price" min="0" step="10" value="{{ request.GET.min_price|default:'' }}" placeholder="$0" style="border-radius: 8px;">
+                                    </div>
+                                    <div class="col-6">
+                                        <label style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Max Price</label>
+                                        <input type="number" class="form-control" name="max_price" min="0" step="10" value="{{ request.GET.max_price|default:'' }}" placeholder="$10000" style="border-radius: 8px;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Rating Filter -->
+                            <div class="mb-4">
+                                <h6 style="font-weight: 700; color: #333; margin-bottom: 1rem; border-bottom: 2px solid #667eea; padding-bottom: 8px;">
+                                    <i class="fas fa-star me-2"></i>Rating
+                                </h6>
+                                {% for rating in "54321" %}
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="rating" value="{{ rating }}" id="rating{{ rating }}" 
+                                           {% if request.GET.rating == rating %}checked{% endif %}>
+                                    <label class="form-check-label" for="rating{{ rating }}" style="color: #555; cursor: pointer;">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= rating|add:0 %}
+                                            <i class="fas fa-star" style="color: #ffc107; font-size: 0.85rem;"></i>
+                                            {% else %}
+                                            <i class="far fa-star" style="color: #ffc107; font-size: 0.85rem;"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                        & Up
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Availability Filter -->
+                            <div class="mb-4">
+                                <h6 style="font-weight: 700; color: #333; margin-bottom: 1rem; border-bottom: 2px solid #667eea; padding-bottom: 8px;">
+                                    <i class="fas fa-check-circle me-2"></i>Availability
+                                </h6>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="in_stock" value="true" id="inStock" 
+                                           {% if request.GET.in_stock %}checked{% endif %}>
+                                    <label class="form-check-label" for="inStock" style="color: #555; cursor: pointer;">
+                                        In Stock Only
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="on_sale" value="true" id="onSale" 
+                                           {% if request.GET.on_sale %}checked{% endif %}>
+                                    <label class="form-check-label" for="onSale" style="color: #555; cursor: pointer;">
+                                        On Sale
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Brands Filter -->
+                            <div class="mb-4">
+                                <h6 style="font-weight: 700; color: #333; margin-bottom: 1rem; border-bottom: 2px solid #667eea; padding-bottom: 8px;">
+                                    <i class="fas fa-tag me-2"></i>Brands
+                                </h6>
+                                {% for brand in brands %}
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" name="brand" value="{{ brand.id }}" id="brand{{ brand.id }}" 
+                                    <label class="form-check-label" for="brand{{ brand.id }}" style="color: #555; cursor: pointer;">
+                                        {{ brand.name }}
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Apply Filters Button -->
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary" style="border-radius: 10px; font-weight: 600; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                                    <i class="fas fa-check me-2"></i>Apply Filters
+                                </button>
+                                <a href="{% url 'home' %}" class="btn btn-outline-danger" style="border-radius: 10px; font-weight: 600;">
+                                    <i class="fas fa-times me-2"></i>Clear All Filters
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="col-lg-9 col-md-8">
+                <!-- Results Header -->
+                <div class="card mb-4" style="border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <div class="card-body" style="padding: 1.5rem;">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h4 style="margin: 0; font-weight: 700; color: #333;">
+                                    {% if category %}
+                                        {{ category.name }}
+                                    {% elif request.GET.search %}
+                                        Search Results for "{{ request.GET.search }}"
+                                    {% else %}
+                                        All Products
+                                    {% endif %}
+                                </h4>
+                                <p style="margin: 0.5rem 0 0 0; color: #666; font-size: 0.95rem;">
+                                    Showing {{ products|length }} of {{ total_products }} products
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <form method="GET" class="d-flex justify-content-md-end mt-3 mt-md-0">
+                                    <!-- Preserve existing filters -->
+                                    {% for key, values in request.GET.lists %}
+                                        {% if key != 'sort' %}
+                                            {% for value in values %}
+                                            <input type="hidden" name="{{ key }}" value="{{ value }}">
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    
+                                    <select class="form-select" name="sort" style="width: auto; border-radius: 10px; padding: 10px 15px; border: 2px solid #667eea; color: #667eea; font-weight: 600;">
+                                        <option value="">Sort By</option>
+                                        <option value="price_low" {% if request.GET.sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                                        <option value="price_high" {% if request.GET.sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                                        <option value="name_asc" {% if request.GET.sort == 'name_asc' %}selected{% endif %}>Name: A to Z</option>
+                                        <option value="name_desc" {% if request.GET.sort == 'name_desc' %}selected{% endif %}>Name: Z to A</option>
+                                        <option value="rating" {% if request.GET.sort == 'rating' %}selected{% endif %}>Highest Rated</option>
+                                        <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>Newest First</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary ms-2" style="border-radius: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; font-weight: 600;">
+                                        Sort
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Container -->
+                <div id="productsContainer" class="row g-4">
+                    {% for product in products %}
+                    <div class="col-lg-4 col-md-6 product-item">
+                        <div class="card h-100" style="border: none; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                            <div style="position: relative; height: 280px; overflow: hidden; background-color: #f8f9fa;">
+                                <a href="">
+                                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 100%; width: 100%; object-fit: cover;">
+                                </a>
+                                {% if product.discount %}
+                                <div style="position: absolute; top: 10px; left: 10px; background: #e74c3c; color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
+                                    -{{ product.discount }}%
+                                </div>
+                                {% endif %}
+                                <!-- {% if not product.in_stock %}
+                                <div style="position: absolute; top: 10px; right: 10px; background: #95a5a6; color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">
+                                    Out of Stock
+                                </div>
+                                {% endif %} -->
+                                <div style="position: absolute; bottom: 10px; right: 10px; display: flex; gap: 8px;">
+                                    <a href="#" class="btn btn-light" style="border-radius: 50%; width: 40px; height: 40px; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-heart" style="color: #e74c3c;"></i>
+                                    </a>
+                                    <a href="" class="btn btn-light" style="border-radius: 50%; width: 40px; height: 40px; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-eye" style="color: #667eea;"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="card-body" style="padding: 1.5rem;">
+                                <div style="font-size: 0.85rem; color: #667eea; font-weight: 600; margin-bottom: 0.5rem;">{{ product.category.name }}</div>
+                                <h5 class="card-title" style="font-weight: 600; color: #333; margin-bottom: 0.8rem; font-size: 1rem;">
+                                    <a href="" style="text-decoration: none; color: #333;">{{ product.name }}</a>
+                                </h5>
+                                <div class="mb-2">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= product.rating %}
+                                        <i class="fas fa-star" style="color: #ffc107; font-size: 0.9rem;"></i>
+                                        {% else %}
+                                        <i class="far fa-star" style="color: #ffc107; font-size: 0.9rem;"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <span style="color: #666; font-size: 0.85rem; margin-left: 5px;">({{ product.reviews_count }})</span>
+                                </div>
+                                {% if product.brand %}
+                                <p style="color: #999; font-size: 0.85rem; margin-bottom: 0.8rem;">
+                                    <i class="fas fa-tag me-1"></i>{{ product.brand.name }}
+                                </p>
+                                {% endif %}
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <span style="font-size: 1.5rem; font-weight: 700; color: #667eea;">${{ product.price }}</span>
+                                        {% if product.original_price %}
+                                        <span style="font-size: 1rem; color: #999; text-decoration: line-through; margin-left: 8px;">${{ product.original_price }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>          
+                                <div class="d-grid gap-2">
+                                    <form method="POST" action="">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-primary w-100" style="border-radius: 8px; font-weight: 600; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                                            <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12">
+                        <div class="card" style="border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 4rem; text-align: center;">
+                            <i class="fas fa-search" style="font-size: 4rem; color: #667eea; margin-bottom: 1.5rem;"></i>
+                            <h3 style="color: #333; font-weight: 700; margin-bottom: 1rem;">No Products Found</h3>
+                            <p style="color: #666; font-size: 1.1rem; margin-bottom: 1.5rem;">We couldn't find any products matching your criteria.</p>
+                            <a href="{% url 'products' %}" class="btn btn-primary" style="border-radius: 10px; padding: 12px 30px; font-weight: 600; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; margin: 0 auto; width: fit-content;">
+                                <i class="fas fa-redo me-2"></i>Clear Filters
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if products.has_other_pages %}
+                <div class="mt-5">
+                    <nav>
+                        <ul class="pagination justify-content-center" style="gap: 8px;">
+                            {% if products.has_previous %}
+                            <li class="page-item">
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ products.previous_page_number }}{% for key, values in request.GET.lists %}{% if key != 'page' %}{% for value in values %}&{{ key }}={{ value }}{% endfor %}{% endif %}{% endfor %}" style="border-radius: 10px; border: 2px solid #667eea; color: #667eea; font-weight: 600; padding: 10px 18px;">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+
+                            {% for num in products.paginator.page_range %}
+                                {% if products.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link" style="border-radius: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; font-weight: 600; padding: 10px 18px;">{{ num }}</span>
+                                </li>
+                                {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}{% for key, values in request.GET.lists %}{% if key != 'page' %}{% for value in values %}&{{ key }}={{ value }}{% endfor %}{% endif %}{% endfor %}" style="border-radius: 10px; border: 2px solid #667eea; color: #667eea; font-weight: 600; padding: 10px 18px;">{{ num }}</a>
+                                </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if products.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ products.next_page_number }}{% for key, values in request.GET.lists %}{% if key != 'page' %}{% for value in values %}&{{ key }}={{ value }}{% endfor %}{% endif %}{% endfor %}" style="border-radius: 10px; border: 2px solid #667eea; color: #667eea; font-weight: 600; padding: 10px 18px;">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ products.paginator.num_pages }}{% for key, values in request.GET.lists %}{% if key != 'page' %}{% for value in values %}&{{ key }}={{ value }}{% endfor %}{% endif %}{% endfor %}" style="border-radius: 10px; border: 2px solid #667eea; color: #667eea; font-weight: 600; padding: 10px 18px;">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                    <p class="text-center" style="color: #666; margin-top: 1rem;">
+                        Page {{ products.number }} of {{ products.paginator.num_pages }}
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; padding: 3rem 0 1rem 0; margin-top: 4rem;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h5 style="font-weight: 700; margin-bottom: 1.5rem; font-size: 1.5rem;">
+                        <i class="fas fa-shopping-bag me-2"></i>ShopHub
+                    </h5>
+                    <p style="color: #bdc3c7; line-height: 1.8;">Your one-stop destination for all your shopping needs. Quality products, great prices, and exceptional service.</p>
+                    <div style="margin-top: 1.5rem;">
+                        <a href="#" style="color: white; font-size: 1.5rem; margin-right: 15px; text-decoration: none;"><i class="fab fa-facebook"></i></a>
+                        <a href="#" style="color: white; font-size: 1.5rem; margin-right: 15px; text-decoration: none;"><i class="fab fa-twitter"></i></a>
+                        <a href="#" style="color: white; font-size: 1.5rem; margin-right: 15px; text-decoration: none;"><i class="fab fa-instagram"></i></a>
+                        <a href="#" style="color: white; font-size: 1.5rem; text-decoration: none;"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h5 style="font-weight: 700; margin-bottom: 1.5rem;">Quick Links</h5>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 0.8rem;"><a href="#" style="color: #bdc3c7; text-decoration: none;"><i class="fas fa-chevron-right me-2"></i>About Us</a></li>
+                        <li style="margin-bottom: 0.8rem;"><a href="#" style="color: #bdc3c7; text-decoration: none;"><i class="fas fa-chevron-right me-2"></i>Contact</a></li>
+                        <li style="margin-bottom: 0.8rem;"><a href="#" style="color: #bdc3c7; text-decoration: none;"><i class="fas fa-chevron-right me-2"></i>FAQ</a></li>
+                        <li style="margin-bottom: 0.8rem;"><a href="#" style="color: #bdc3c7; text-decoration: none;"><i class="fas fa-chevron-right me-2"></i>Blog</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5 style="font-weight: 700; margin-bottom: 1.5rem;">Customer Service</h5>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 0.8rem;"><a href="#" style="color: #bdc3c7; text-decoration: none;"><i class="fas fa-chevron-right me-2"></i>Shipping Info</a></li>
+                        <li style="margin-bottom: 0.8rem;"><a href="#" style="color: #bdc3c7; text-decoration: none;"><i class="fas fa-chevron-right me-2"></i>Returns</a></li>
+                        <li style="margin-bottom: 0.8rem;"><a href="#" style="color: #bdc3c7; text-decoration: none;"><i class="fas fa-chevron-right me-2"></i>Track Order</a></li>
+                        <li style="margin-bottom: 0.8rem;"><a href="#" style="color: #bdc3c7; text-decoration: none;"><i class="fas fa-chevron-right me-2"></i>Privacy Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <h5 style="font-weight: 700; margin-bottom: 1.5rem;">Contact Info</h5>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 1rem; color: #bdc3c7;">
+                            <i class="fas fa-map-marker-alt me-2" style="color: #667eea;"></i>
+                            123 Shopping Street, NY 10001
+                        </li>
+                        <li style="margin-bottom: 1rem; color: #bdc3c7;">
+                            <i class="fas fa-phone me-2" style="color: #667eea;"></i>
+                            +1 234 567 8900
+                        </li>
+                        <li style="margin-bottom: 1rem; color: #bdc3c7;">
+                            <i class="fas fa-envelope me-2" style="color: #667eea;"></i>
+                            support@shophub.com
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 2rem 0 1.5rem 0;">
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start" style="color: #bdc3c7;">
+                    <p style="margin: 0;">&copy; {% now "Y" %} ShopHub. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end" style="color: #bdc3c7;">
+                    <a href="#" style="color: #bdc3c7; text-decoration: none; margin-left: 20px;">Terms of Service</a>
+                    <a href="#" style="color: #bdc3c7; text-decoration: none; margin-left: 20px;">Privacy Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
