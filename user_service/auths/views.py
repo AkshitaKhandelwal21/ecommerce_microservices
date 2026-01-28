@@ -23,7 +23,15 @@ class LoginView(APIView):
         user = authenticate(username=username, password=password)
         if user:
             token, created = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key, 'role': user.roles}, status=200)
+            return Response({
+            "token": token.key,
+            "user": {
+                "id": user.id,
+                "email": user.email,
+                "role": user.roles
+            }
+        }, status=200)
+
         
         return Response(
             {'error': 'Invalid username or password'}, status=401
