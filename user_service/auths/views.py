@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from auths.models import Users
 from auths.serializers import UserSerializer
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
 
 # Create your views here.
 
@@ -22,9 +23,11 @@ class LoginView(APIView):
 
         user = authenticate(username=username, password=password)
         if user:
-            token, created = Token.objects.get_or_create(user=user)
+            refresh = RefreshToken.for_user(user)
+            
             return Response({
-            "token": token.key,
+            "access": str(refresh.access_token),
+            "refresh": str(refresh),
             "user": {
                 "id": user.id,
                 "email": user.email,
