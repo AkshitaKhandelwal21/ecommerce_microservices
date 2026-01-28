@@ -15,8 +15,13 @@ from prod_app.serializer import CategorySerializer, ProductSerializer, SubCatego
 class ProductsView(APIView):
     try:
         def get(self, request):
-            products = ProductModel.objects.all()
-            serializer = ProductSerializer(products, many=True)
+            queryset = ProductModel.objects.all()
+            sub = request.GET.get('sub')
+
+            if sub:
+                queryset = ProductModel.objects.filter(sub_category__name=sub)
+
+            serializer = ProductSerializer(queryset, many=True)
             return Response(serializer.data)
 
         def post(self, request):
@@ -102,3 +107,10 @@ class SubcatById(APIView):
     def delete(self, request, pk):
         sub = self.get_object(pk=pk)
         sub.delete()
+
+
+class ProductbySubcategory(APIView):
+    def get(self, request, sub):
+        queryset = ProductModel.objects.filter(sub_category__name=sub)
+        serializer = ProductSerializer(queryset, many=True)
+        return Response(serializer.data)

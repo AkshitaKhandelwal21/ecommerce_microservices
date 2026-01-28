@@ -9,6 +9,9 @@ urlpatterns = [
     # path('products/', include(router.urls)),
    path('products/', views.ProductsView.as_view(), name='products'), 
    path('product/<int:pk>/', views.ProductsByIdView.as_view(), name='product'),
-   path('category/', views.CategoryView.as_view(), name='category')
+   path('category/', views.CategoryView.as_view(), name='category'),
+   path('subcat/', views.SubCategoryView.as_view(), name='subcat'),
+#    path('subcat/<int:pk>/', views.SubcatById.as_view()),
+#    path('product/<str:sub>/', views.ProductbySubcategory.as_view(), name='prod-sub'),
 #    path('subcategory/', views)
 ]
