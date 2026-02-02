@@ -11,6 +11,7 @@ class ImageSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     images = ImageSerializer(many=True)
+    seller_id = serializers.IntegerField(read_only=True)
     class Meta:
         model = ProductModel
         fields = '__all__'

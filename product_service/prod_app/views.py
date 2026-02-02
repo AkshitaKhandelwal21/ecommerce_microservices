@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from prod_app.models import Category, ProductModel, SubCategory
 from prod_app.serializer import CategorySerializer, ProductSerializer, SubCategorySerializer
+from prod_app.services.seller_client import SellerClient
 
 # Create your views here.
 
@@ -25,11 +26,22 @@ class ProductsView(APIView):
             return Response(serializer.data)
 
         def post(self, request):
+            role = request.headers.get("X-User-Role")
+            user_id = request.headers.get('X-User-Id')
+            if role != 'seller':
+                return Response(
+                {"detail": "Only sellers can create products"},
+                status=403,
+                )
+            
+            seller_data = SellerClient.get_seller(user_id)
+            seller_id = seller_data["id"]
+
             serializer = ProductSerializer(data=request.data)
             if serializer.is_valid():
-                serializer.save()
+                serializer.save(seller_id=seller_id)
                 return Response(serializer.data)
-            return Response(serializer.errors)
+            # return Response(serializer.errors)
 
     except Exception as e:
         raise HTTPException(e)

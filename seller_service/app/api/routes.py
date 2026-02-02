@@ -13,5 +13,5 @@ def create_seller(seller: SellerCreate, session: SessionDep, user_id: int = Depe
 
 
 @router.get('/seller/{id}')
-def get_seller_by_user_id(session: SessionDep, user_id: int = Depends(get_current_user)):
+def get_seller_by_user_id(session: SessionDep, user_id: int):
     SellerService.get_seller(session, user_id)
