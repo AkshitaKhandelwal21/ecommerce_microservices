@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 
+from products.forms import CreateProductForm
 from services.product_client import ProductService, get_all_products
 
 # Create your views here.
@@ -25,14 +26,22 @@ class ProductList(TemplateView):
         context['subcats'] = ProductService.get_subcat()
 
         return context
-    
-    
-class ProductBySellerView(TemplateView):
-    template_name = 'products/new_product.html'
+        
+
+class NewProductView(TemplateView):
+    template_name = 'sellers/new_product.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # context['form'] = 
+        context['categories'] = ProductService.get_categories(self.request)
+        context['form'] = CreateProductForm()
+        return context
+    
+    
+# class CategoryListView(ListView):
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['categories'] = ProductService.get_categories(self.request)
     
     
 

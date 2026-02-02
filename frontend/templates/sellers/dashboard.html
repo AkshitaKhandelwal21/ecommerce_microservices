@@ -3,9 +3,382 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Seller Dashboard - ShopHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-    <h1>Seller Dashboard</h1>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa;">
+
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'seller-dashboard' %}" style="font-weight: bold; font-size: 1.5rem;">
+                <i class="fas fa-store me-2"></i>Seller Dashboard
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}"><i class="fas fa-home me-1"></i>Storefront</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-bell me-1"></i>Notifications <span class="badge bg-danger">{{ notification_count|default:0 }}</span></a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>{{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><a class="dropdown-item" href=" "><i class="fas fa-exchange-alt me-2"></i>Switch to Customer</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href=" "><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            
+            <!-- Sidebar -->
+            <div class="col-lg-2 col-md-3 d-none d-md-block" style="background: white; min-height: calc(100vh - 56px); padding: 0; box-shadow: 2px 0 10px rgba(0,0,0,0.05);">
+                <div style="padding: 2rem 0;">
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 0.5rem;">
+                            <a href="{% url 'seller-dashboard' %}" style="display: block; padding: 1rem 1.5rem; color: #f5576c; background: rgba(245, 87, 108, 0.1); text-decoration: none; border-left: 4px solid #f5576c; font-weight: 600;">
+                                <i class="fas fa-chart-line me-2"></i>Dashboard
+                            </a>
+                        </li>
+                        <li style="margin-bottom: 0.5rem;">
+                            <a href=" " style="display: block; padding: 1rem 1.5rem; color: #555; text-decoration: none; transition: all 0.3s;">
+                                <i class="fas fa-box me-2"></i>My Products
+                            </a>
+                        </li>
+                        <li style="margin-bottom: 0.5rem;">
+                            <a href=" " style="display: block; padding: 1rem 1.5rem; color: #555; text-decoration: none; transition: all 0.3s;">
+                                <i class="fas fa-shopping-bag me-2"></i>Orders
+                            </a>
+                        </li>
+                        <li style="margin-bottom: 0.5rem;">
+                            <a href=" " style="display: block; padding: 1rem 1.5rem; color: #555; text-decoration: none; transition: all 0.3s;">
+                                <i class="fas fa-warehouse me-2"></i>Inventory
+                            </a>
+                        </li>
+                        <li style="margin-bottom: 0.5rem;">
+                            <a href=" " style="display: block; padding: 1rem 1.5rem; color: #555; text-decoration: none; transition: all 0.3s;">
+                                <i class="fas fa-chart-bar me-2"></i>Analytics
+                            </a>
+                        </li>
+                        <li style="margin-bottom: 0.5rem;">
+                            <a href="" style="display: block; padding: 1rem 1.5rem; color: #555; text-decoration: none; transition: all 0.3s;">
+                                <i class="fas fa-star me-2"></i>Reviews
+                            </a>
+                        </li>
+                        <li style="margin-bottom: 0.5rem;">
+                            <a href="" style="display: block; padding: 1rem 1.5rem; color: #555; text-decoration: none; transition: all 0.3s;">
+                                <i class="fas fa-dollar-sign me-2"></i>Payments
+                            </a>
+                        </li>
+                        <li style="margin-bottom: 0.5rem;">
+                            <a href=" " style="display: block; padding: 1rem 1.5rem; color: #555; text-decoration: none; transition: all 0.3s;">
+                                <i class="fas fa-cog me-2"></i>Settings
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-10 col-md-9" style="padding: 2rem;">
+                
+                <!-- Welcome Section -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h2 style="font-weight: 700; color: #333; margin-bottom: 0.5rem;">
+                            Welcome back, {{ user.first_name|default:user.username }}!
+                        </h2>
+                        <p style="color: #666; font-size: 1rem;">Here's what's happening with your store today.</p>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="row g-4 mb-4">
+                    
+                    <!-- Total Revenue Card -->
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card" style="border: none; border-radius: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                            <div class="card-body" style="padding: 1.5rem;">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                        <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Total Revenue</p>
+                                        <h3 style="margin: 0.5rem 0 0 0; font-weight: 700; font-size: 2rem;">${{ total_revenue|default:"0.00" }}</h3>
+                                    </div>
+                                    <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-dollar-sign" style="font-size: 1.8rem;"></i>
+                                    </div>
+                                </div>
+                                <p style="margin: 0.8rem 0 0 0; font-size: 0.85rem; opacity: 0.9;">
+                                    <i class="fas fa-arrow-up me-1"></i>{{ revenue_growth|default:"12" }}% from last month
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Orders Card -->
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card" style="border: none; border-radius: 15px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                            <div class="card-body" style="padding: 1.5rem;">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                        <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Total Orders</p>
+                                        <h3 style="margin: 0.5rem 0 0 0; font-weight: 700; font-size: 2rem;">{{ total_orders|default:"0" }}</h3>
+                                    </div>
+                                    <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-shopping-bag" style="font-size: 1.8rem;"></i>
+                                    </div>
+                                </div>
+                                <p style="margin: 0.8rem 0 0 0; font-size: 0.85rem; opacity: 0.9;">
+                                    <i class="fas fa-arrow-up me-1"></i>{{ orders_growth|default:"8" }}% from last month
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Products Card -->
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card" style="border: none; border-radius: 15px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                            <div class="card-body" style="padding: 1.5rem;">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                        <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Total Products</p>
+                                        <h3 style="margin: 0.5rem 0 0 0; font-weight: 700; font-size: 2rem;">{{ total_products|default:"0" }}</h3>
+                                    </div>
+                                    <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-box" style="font-size: 1.8rem;"></i>
+                                    </div>
+                                </div>
+                                <p style="margin: 0.8rem 0 0 0; font-size: 0.85rem; opacity: 0.9;">
+                                    <i class="fas fa-info-circle me-1"></i>{{ active_products|default:"0" }} active products
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pending Orders Card -->
+                    <div class="col-lg-3 col-md-6">
+                        <div class="card" style="border: none; border-radius: 15px; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                            <div class="card-body" style="padding: 1.5rem;">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                        <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">Pending Orders</p>
+                                        <h3 style="margin: 0.5rem 0 0 0; font-weight: 700; font-size: 2rem;">{{ pending_orders|default:"0" }}</h3>
+                                    </div>
+                                    <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-clock" style="font-size: 1.8rem;"></i>
+                                    </div>
+                                </div>
+                                <p style="margin: 0.8rem 0 0 0; font-size: 0.85rem; opacity: 0.9;">
+                                    <i class="fas fa-exclamation-circle me-1"></i>Requires attention
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card" style="border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                            <div class="card-body" style="padding: 1.5rem;">
+                                <h5 style="font-weight: 700; color: #333; margin-bottom: 1.5rem;">
+                                    <i class="fas fa-bolt me-2" style="color: #f5576c;"></i>Quick Actions
+                                </h5>
+                                <div class="row g-3">
+                                    <div class="col-lg-3 col-md-6">
+                                        <a href="{% url 'new-product' %}" style="text-decoration: none;">
+                                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 12px; text-align: center; transition: transform 0.3s ease;">
+                                                <i class="fas fa-plus-circle" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                                                <p style="margin: 0; font-weight: 600; font-size: 1rem;">Add New Product</p>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6">
+                                        <a href="" style="text-decoration: none;">
+                                            <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 1.5rem; border-radius: 12px; text-align: center; transition: transform 0.3s ease;">
+                                                <i class="fas fa-list-ul" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                                                <p style="margin: 0; font-weight: 600; font-size: 1rem;">View All Orders</p>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6">
+                                        <a href="{}" style="text-decoration: none;">
+                                            <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 1.5rem; border-radius: 12px; text-align: center; transition: transform 0.3s ease;">
+                                                <i class="fas fa-boxes" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                                                <p style="margin: 0; font-weight: 600; font-size: 1rem;">Manage Inventory</p>
+                                            </div>
+                                        </a>
+                                    </div>
+                                    <div class="col-lg-3 col-md-6">
+                                        <a href="" style="text-decoration: none;">
+                                            <div style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; padding: 1.5rem; border-radius: 12px; text-align: center; transition: transform 0.3s ease;">
+                                                <i class="fas fa-chart-pie" style="font-size: 2.5rem; margin-bottom: 1rem;"></i>
+                                                <p style="margin: 0; font-weight: 600; font-size: 1rem;">View Analytics</p>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    
+                    <!-- Recent Orders -->
+                    <div class="col-lg-8">
+                        <div class="card" style="border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                            <div class="card-header" style="background: white; border-bottom: 2px solid #f8f9fa; border-radius: 15px 15px 0 0; padding: 1.5rem;">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 style="margin: 0; font-weight: 700; color: #333;">
+                                        <i class="fas fa-shopping-bag me-2" style="color: #f5576c;"></i>Recent Orders
+                                    </h5>
+                                    <a href="" style="color: #f5576c; text-decoration: none; font-weight: 600; font-size: 0.9rem;">
+                                        View All <i class="fas fa-arrow-right ms-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="card-body" style="padding: 0;">
+                                <div class="table-responsive">
+                                    <table class="table" style="margin: 0;">
+                                        <thead style="background: #f8f9fa;">
+                                            <tr>
+                                                <th style="padding: 1rem; border: none; color: #666; font-weight: 600; font-size: 0.9rem;">Order ID</th>
+                                                <th style="padding: 1rem; border: none; color: #666; font-weight: 600; font-size: 0.9rem;">Customer</th>
+                                                <th style="padding: 1rem; border: none; color: #666; font-weight: 600; font-size: 0.9rem;">Product</th>
+                                                <th style="padding: 1rem; border: none; color: #666; font-weight: 600; font-size: 0.9rem;">Amount</th>
+                                                <th style="padding: 1rem; border: none; color: #666; font-weight: 600; font-size: 0.9rem;">Status</th>
+                                                <th style="padding: 1rem; border: none; color: #666; font-weight: 600; font-size: 0.9rem;">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for order in recent_orders %}
+                                            <tr>
+                                                <td style="padding: 1rem; border-bottom: 1px solid #f8f9fa; color: #333; font-weight: 600;">#{{ order.id }}</td>
+                                                <td style="padding: 1rem; border-bottom: 1px solid #f8f9fa; color: #555;">{{ order.customer_name }}</td>
+                                                <td style="padding: 1rem; border-bottom: 1px solid #f8f9fa; color: #555;">{{ order.product_name|truncatewords:3 }}</td>
+                                                <td style="padding: 1rem; border-bottom: 1px solid #f8f9fa; color: #333; font-weight: 600;">${{ order.amount }}</td>
+                                                <td style="padding: 1rem; border-bottom: 1px solid #f8f9fa;">
+                                                    {% if order.status == 'pending' %}
+                                                    <span style="background: #fff3cd; color: #856404; padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">Pending</span>
+                                                    {% elif order.status == 'processing' %}
+                                                    <span style="background: #cfe2ff; color: #084298; padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">Processing</span>
+                                                    {% elif order.status == 'shipped' %}
+                                                    <span style="background: #d1e7dd; color: #0a3622; padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">Shipped</span>
+                                                    {% elif order.status == 'delivered' %}
+                                                    <span style="background: #d1e7dd; color: #0a3622; padding: 5px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">Delivered</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td style="padding: 1rem; border-bottom: 1px solid #f8f9fa;">
+                                                    <a href="{% url 'order_detail' order.id %}" class="btn btn-sm" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border: none; border-radius: 8px; padding: 5px 15px; font-weight: 600;">View</a>
+                                                </td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="6" style="padding: 3rem; text-align: center; color: #999;">
+                                                    <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
+                                                    No orders yet
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Low Stock Alert & Top Products -->
+                    <div class="col-lg-4">
+                        
+                        <!-- Low Stock Alert -->
+                        <div class="card mb-4" style="border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                            <div class="card-header" style="background: white; border-bottom: 2px solid #f8f9fa; border-radius: 15px 15px 0 0; padding: 1.5rem;">
+                                <h5 style="margin: 0; font-weight: 700; color: #333;">
+                                    <i class="fas fa-exclamation-triangle me-2" style="color: #ffc107;"></i>Low Stock Alert
+                                </h5>
+                            </div>
+                            <div class="card-body" style="padding: 1rem;">
+                                {% for product in low_stock_products %}
+                                <div style="padding: 1rem; border-bottom: 1px solid #f8f9fa;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <p style="margin: 0; font-weight: 600; color: #333; font-size: 0.9rem;">{{ product.name|truncatewords:4 }}</p>
+                                            <p style="margin: 0.3rem 0 0 0; color: #dc3545; font-size: 0.85rem;">
+                                                <i class="fas fa-box me-1"></i>Only {{ product.stock }} left
+                                            </p>
+                                        </div>
+                                        <a href="{% url 'edit_product' product.id %}" class="btn btn-sm" style="background: #f5576c; color: white; border: none; border-radius: 8px; padding: 5px 12px; font-size: 0.85rem;">Restock</a>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div style="padding: 2rem; text-align: center; color: #999;">
+                                    <i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 0.5rem; display: block; color: #28a745;"></i>
+                                    <p style="margin: 0; font-size: 0.9rem;">All products in stock</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Top Products -->
+                        <div class="card" style="border: none; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                            <div class="card-header" style="background: white; border-bottom: 2px solid #f8f9fa; border-radius: 15px 15px 0 0; padding: 1.5rem;">
+                                <h5 style="margin: 0; font-weight: 700; color: #333;">
+                                    <i class="fas fa-trophy me-2" style="color: #ffc107;"></i>Top Products
+                                </h5>
+                            </div>
+                            <div class="card-body" style="padding: 1rem;">
+                                {% for product in top_products %}
+                                <div style="padding: 1rem; border-bottom: 1px solid #f8f9fa;">
+                                    <div class="d-flex align-items-center">
+                                        <div style="width: 50px; height: 50px; background: #f8f9fa; border-radius: 10px; overflow: hidden; margin-right: 1rem;">
+                                            <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <p style="margin: 0; font-weight: 600; color: #333; font-size: 0.9rem;">{{ product.name|truncatewords:4 }}</p>
+                                            <p style="margin: 0.3rem 0 0 0; color: #666; font-size: 0.85rem;">
+                                                <i class="fas fa-shopping-cart me-1"></i>{{ product.sales_count }} sales
+                                            </p>
+                                        </div>
+                                        <div style="text-align: right;">
+                                            <p style="margin: 0; font-weight: 700; color: #28a745; font-size: 1rem;">${{ product.revenue }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div style="padding: 2rem; text-align: center; color: #999;">
+                                    <i class="fas fa-chart-line" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;"></i>
+                                    <p style="margin: 0; font-size: 0.9rem;">No sales data yet</p>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

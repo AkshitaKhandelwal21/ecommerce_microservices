@@ -38,8 +38,10 @@ class LoginView(TemplateView):
             request.session['refresh_token'] = data['refresh']
             request.session['role'] = data['user']['role']
             request.session['user_id'] = data['user']['id']
-            
-            if role[0]=='customer': 
+
+            if len(role) > 1:
+                return redirect('choose-account')    
+            elif role[0]=='customer': 
                 return redirect('user-dashboard')
             elif role[0]=='seller':
                 return redirect('user-dashboard')
@@ -52,10 +54,22 @@ class LoginView(TemplateView):
 class UserDashboardView(TemplateView):
     template_name = 'users/dashboard.html'
 
-
 class SellerDashboardView(TemplateView):
     template_name = 'sellers/dashboard.html'
 
-
 class AdminDashboard(TemplateView):
     template_name = 'admin/dashboard.html'
+
+
+class SellerOrUserAccountView(TemplateView):
+    template_name = 'choose_account.html'
+
+    def post(self, request, *args, **kwargs):
+        role = request.POST.get("role")
+        
+        if role == "customer":
+            return redirect("user-dashboard")
+        elif role == "seller":
+            return redirect("seller-dashboard")
+
+        return redirect("choose-account")

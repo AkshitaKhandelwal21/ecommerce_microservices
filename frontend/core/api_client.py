@@ -9,12 +9,11 @@ class APIClient:
             self.base_headers["Authorization"] = f"Bearer {token}"
 
     def _get_headers(self):
-        headers = {"Content-Type": "application/json"}
+        headers = self.base_headers.copy()
         if self.request:
             token = self.request.session.get("auth_token")
-            if token: 
+            if token:
                 headers["Authorization"] = f"Bearer {token}"
-
         return headers
 
     def get(self, url, params=None):
@@ -22,13 +21,17 @@ class APIClient:
         response.raise_for_status()
         return response.json()
 
-    def post(self, url, data=None):
-        return requests.post(url, headers=self._get_headers(), json=data)
+    def post(self, url, data=None, params=None):
+        response = requests.post(url, headers=self._get_headers(), json=data, params=params)
+        response.raise_for_status()
+        return response.json()
 
     def put(self, url, data=None):
-        return requests.put(url, headers=self._get_headers(), json=data)
+        response = requests.put(url, headers=self._get_headers(), json=data)
+        response.raise_for_status()
+        return response.json()
 
     def delete(self, url):
-        return requests.delete(url, headers=self._get_headers())
-    
-    # Validation methods
+        response = requests.delete(url, headers=self._get_headers())
+        response.raise_for_status()
+        return response.json()

@@ -35,6 +35,7 @@ class ProductsView(APIView):
                 )
             
             seller_data = SellerClient.get_seller(user_id)
+            print(seller_data)
             seller_id = seller_data["id"]
 
             serializer = ProductSerializer(data=request.data)

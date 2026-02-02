@@ -14,23 +14,31 @@ def get_all_products():
 
 class ProductService:
     PRODUCT_SERVICE_URL = settings.PRODUCT_SERVICE_URL
-    client = APIClient()
 
     @classmethod
-    def get_products(cls, params=None):
-        return cls.client.get(f"{cls.PRODUCT_SERVICE_URL}/products/", params=params)
+    def get_products(cls, request, params=None):
+        client = APIClient(request)
+        return client.get(f"{cls.PRODUCT_SERVICE_URL}/products/", params=params)
     
     @classmethod
-    def get_subcat(cls):
-        return cls.client.get(f"{cls.PRODUCT_SERVICE_URL}/subcat/")
+    def get_subcat(cls, request):
+        client = APIClient(request)
+        return client.get(f"{cls.PRODUCT_SERVICE_URL}/subcat/")
     
     @classmethod
-    def get_category(cls):
-        return cls.client.get(f"{cls.PRODUCT_SERVICE_URL}/category/")
+    def get_category(cls, request):
+        client = APIClient(request)
+        return client.get(f"{cls.PRODUCT_SERVICE_URL}/category/")
     
     @classmethod
-    def new_product(cls):
-        return cls.client.post(f"{cls.PRODUCT_SERVICE_URL}/products/")
+    def new_product(cls, request):
+        client = APIClient(request)
+        return client.post(f"{cls.PRODUCT_SERVICE_URL}/products/")
+    
+    @classmethod
+    def get_categories(cls, request):
+        client = APIClient(request)
+        return client.get(f"{cls.PRODUCT_SERVICE_URL}/category")
     
     # @classmethod
     # def get_product_by_subcategory(cls, sub):
