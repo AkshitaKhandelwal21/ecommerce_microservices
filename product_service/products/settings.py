@@ -25,7 +25,7 @@ def load_config(file_path):
 config_path = os.path.join(BASE_DIR, 'config.yaml')
 CONFIG = load_config(config_path)
 
-
+# {'SELLER_SERVICE_URL': CONFIG.SELLER_SERVICE_URL}
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -61,6 +61,13 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
 
 ROOT_URLCONF = 'products.urls'
 
@@ -128,3 +135,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+SELLER_SERVICE_URL = os.getenv('SELLER_SERVICE_URL')

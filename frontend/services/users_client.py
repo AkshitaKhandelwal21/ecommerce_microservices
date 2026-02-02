@@ -14,3 +14,7 @@ class UserService:
     @classmethod
     def login_user(cls, data):
         return cls.client.post(f"{cls.AUTH_SERVICE_URL}/auth/login/", data)
+    
+    @classmethod
+    def get_profile(cls, request):
+        return cls.client.get(f"{cls.AUTH_SERVICE_URL}/users/me")

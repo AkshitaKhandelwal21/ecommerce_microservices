@@ -33,15 +33,17 @@ class LoginView(TemplateView):
         response = UserService.login_user(request.POST)
         if response.status_code==200:
             data = response.json()
-            print(data)
-            request.session['auth_token'] = data['token']
-            request.session['role'] = data['role']
-
-            if data['role']=='customer':
+            role = data['user']['role']
+            request.session['auth_token'] = data['access']
+            request.session['refresh_token'] = data['refresh']
+            request.session['role'] = data['user']['role']
+            request.session['user_id'] = data['user']['id']
+            
+            if role[0]=='customer': 
                 return redirect('user-dashboard')
-            elif data['role']=='seller':
-                return redirect('seller-dashboard')
-            elif data['role']=='admin':
+            elif role[0]=='seller':
+                return redirect('user-dashboard')
+            elif role[0]=='admin':
                 return redirect('admin-dashboard')
             
         return render(request, self.template_name)

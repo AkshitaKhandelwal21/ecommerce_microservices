@@ -9,7 +9,7 @@ from app.services.user_service import UserService
 
 class SellerService():
     
-    @staticmethod
+    @classmethod
     def create_seller(seller, session, user_id):
         seller_obj = Seller(
             user_id = user_id,
@@ -25,7 +25,7 @@ class SellerService():
 
         return data
 
-    @staticmethod
+    @classmethod
     def get_seller(session, user_id):
         seller = Seller_Repository.get_user_by_id(user_id, session)
         if not seller:
